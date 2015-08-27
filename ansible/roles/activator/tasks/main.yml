@@ -1,0 +1,30 @@
+---
+
+- name: install selinux bindings
+  yum: name=libselinux-python state=present
+
+- name: Download Activator
+  get_url: dest={{download_folder}} url=http://downloads.typesafe.com/typesafe-activator/{{ACTIVATOR_VERSION}}/typesafe-activator-{{ACTIVATOR_VERSION}}-minimal.zip
+
+- name: Install package unzip
+  yum: state=latest name=unzip
+
+- name: Unpack archive
+  unarchive: src={{download_folder}}/typesafe-activator-{{ACTIVATOR_VERSION}}-minimal.zip dest={{download_folder}} copy=no
+
+- name: Fix ownership
+  file: state=file path={{download_folder}}/activator-{{ACTIVATOR_VERSION}}-minimal/activator mode=a+x
+
+- name: Add activator to PATH file
+  lineinfile: dest=/home/vagrant/.bashrc line='export PATH=$PATH:{{download_folder}}/activator-{{ACTIVATOR_VERSION}}-minimal' insertafter='EOF' regexp='export PATH=\$PATH:{{download_folder}}/activator-{{ACTIVATOR_VERSION}}-minimal' state=present
+
+- name: Update .bashrc file
+  shell: . /home/vagrant/.bashrc
+
+- name: Download activator dependencies and show helps to prove that we installed successfully
+  shell: "{{download_folder}}/activator-{{ACTIVATOR_VERSION}}-minimal/activator help"
+  register: command_result
+  failed_when: "'FAILED' in command_result.stderr"
+
+- name: Clean up
+  file: state=absent path={{download_folder}}/typesafe-activator-{{ACTIVATOR_VERSION}}-minimal.zip

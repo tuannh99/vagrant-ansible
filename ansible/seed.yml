@@ -1,0 +1,12 @@
+- hosts: all
+  sudo: true
+  roles:
+    - java8-oracle
+    - activator
+  vars:
+    download_url: http://download.oracle.com/otn-pub/java/jdk/8u60-b27/jdk-8u60-linux-x64.tar.gz
+    download_folder: /opt
+    java_name: "{{download_folder}}/jdk1.8.0_60"
+    java_archive: "{{download_folder}}/jdk-8u60-linux-x64.tar.gz"
+    ACTIVATOR_VERSION: 1.3.5
+  remote_user: vagrant
